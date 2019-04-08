@@ -1,0 +1,51 @@
+Javascript engine ?
+--------------------------
+	- a program/intrepreter that executes javascript code
+	- can be implemented as a standard interpreter or just-in-time-compiler
+
+Popular JS engines are
+--------------------------
+	- Google's V8 engine ( in C++ ) - its also used in Node.js runtime
+	- Rhino, managed by Mozilla foundation
+	- SpiderMonkey - first by Netscape now by Firefox
+	- JavascriptCore from Apple
+	- Chakra by microsoft
+	- JerryScript - lightweight engine for IoT
+
+Why V8?
+--------
+	- no interpeter, instead translates js code to machine code at the time of execution using Just In Time compiler
+	- but V8 does not produce bytecode or any intermediate code like other engines
+
+2 compilers
+---------------
+Full-codegen & Crankshaft
+
+V8 has multiple threads
+------------------------
+Thread 1 - fetches the js code & executes it using full-codegen
+Thread 2 - compile the code
+Thread 3 - Helps the Crankshaft for optimizing the code
+Other threads - Garbage collector threads
+
+Full-codegn directly translates the parsed js code to machine code without any intermediate form.So performance is increaded.
+Profile thread gathers data to be optimized
+Crankshaft optimizes them
+
+How does Crankshaft optimize ?
+---------------------------------
+Step 1: *Inlining* - is the process of replacing the call site with the body of the called function
+Step 2 : *Hidden Classes* - C0 & C1 etc classes - https://blog.sessionstack.com/how-javascript-works-inside-the-v8-engine-5-tips-on-how-to-write-optimized-code-ac089e62b12e
+Step 3 : *Inline Caching* - Stores the information of type of the object to a function from previous calls for the same function.This avoides the time that will used to detect the type & properties of the object
+
+Step 2 & step 3 are related ? 
+ - Hidden classes are cached and later on its look up time is fastened
+
+Crankshaft optimize the code to a lower level, which is called Lithium. Register allocation happens at this level. Crankshaft converts this Lithium to machine code.
+
+Garbage Collection
+----------------------
+	- Usually execution is supposed to stop when js engines do garbage collection
+	- V8 instead, does not walk the entire heap for garbage collection
+	- it walks only a part of heap, collect garbage, the continue execution
+	- garbage collection is part by part in the middle of execution (pauses it) instead of at a stretch

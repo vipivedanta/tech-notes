@@ -1,0 +1,55 @@
+Simple SAML as SP
+---------------------
+Download from https://simplesamlphp.org/download
+
+Configure Apache
+------------------
+	* C:\xampp7\apache\conf\extra\httpd-vhosts.conf <-- this is the file to be edited. 
+	* We need to add Virtual hosts to this file
+	* openssl req -new -x509 -nodes -sha1 -days 365 -key server.key -out server.crt -config  C:\xampp7\apache\conf\openssl.cnf
+	* This command will generate .crt key files
+	* openssl rsa -in server.key -out servernopass.key
+	* This will generate servernopass key
+
+	For HTTP
+	---------
+	<VirtualHost *:80>
+    ServerName sp-server.com
+    DocumentRoot C:/xampp7/htdocs/sp-server/config
+    SetEnv SIMPLESAMLPHP_CONFIG_DIR C:/xampp7/htdocs/sp-server/config
+    Alias /simplesaml C:/xampp7/htdocs/sp-server/www
+    <Directory C:/xampp7/htdocs/sp-server/www>
+        <IfModule mod_authz_core.c>
+            AllowOverride All
+            Order allow,deny
+            Allow from all
+        </IfModule>
+    </Directory>
+	</VirtualHost>
+
+	For HTTPS
+	---------
+	<VirtualHost *:443>
+	ServerName sp-server.com
+    DocumentRoot C:/xampp7/htdocs/sp-server/config
+    SetEnv SIMPLESAMLPHP_CONFIG_DIR C:/xampp7/htdocs/sp-server/config
+    Alias /simplesaml C:/xampp7/htdocs/sp-server/www
+    SSLEngine on
+    SSLCertificateFile "conf/ssl.key/server.crt" << path to server.crt
+    SSLCertificateKeyFile "conf/ssl.key/servernopass.key" << path to server nopass key
+    <Directory C:/xampp7/htdocs/sp-server/www>
+        <IfModule mod_authz_core.c>
+            AllowOverride All
+            Order allow,deny
+            Allow from all
+        </IfModule>
+    </Directory>
+	</virtualhost>
+
+
+** Apache conf is setup.Now lets focus on simple saml directory!
+* Find config.php
+
+	'Secretsalt' => ‘customsecretsalt’,
+	'Auth.adminpassword' => ‘yourccustompassword ’,
+	'enable.saml20-idp' => true,
